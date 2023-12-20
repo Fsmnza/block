@@ -28,9 +28,17 @@ TokenTribe
 
 ## How to run
 
+
 ### Prerequisites:
 
-[List any software or tools that need to be installed before running your project.]
+Программное обеспечение:
+Языки программирования (Python)
+Фреймворки (Django)
+Системы управления базами данных ( PostgreSQL)
+
+Инструменты:
+Ключи API 
+Внешние сервисы 
 
 ### Running
 
@@ -38,14 +46,58 @@ TokenTribe
 
 Basic example:
 ```bash
-# Clone the repository
-git clone [repository-url]
-
-# Navigate to the project directory
-cd [project-directory]
-
-# and so on
+django-admin startproject crypto_dashboard_project
+cd crypto_dashboard_project
+python manage.py startapp crypto_monitoringһ
 ```
+
+PYTHON
+
+```apps.py
+
+from django.apps import AppConfig
+
+class CryptoMonitoringConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'crypto_monitoring'
+
+    def ready(self):
+        from . import dash_app  # Импортируем Dash приложение
+        dash_app.initialize_plotly_dash(app_name='CryptoMonitoring')
+
+```
+```dash_app.py
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.express as px
+from django_plotly_dash import DjangoDash
+from .models import CryptoData  
+app = DjangoDash('CryptoMonitoring') 
+crypto_data = CryptoData.objects.all()
+app.layout = html.Div([
+    html.H1('Криптовалютный мониторинг'),
+    dcc.Graph(
+        figure=px.line(crypto_data, x='timestamp', y='value', title='График изменения цен криптовалют')
+    ),
+])
+```
+```ls.py
+from django.urls import path, include
+urlpatterns = [
+    path('crypto/', include('crypto_monitoring.urls')),
+]
+```
+
+```kms.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+]
+```
+
 
 ## Inspirations
 
